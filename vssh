@@ -1,0 +1,84 @@
+#!/bin/sh
+#
+# Quickly ssh into a vagrant box, or run a command
+# over SSH. CDs into the current directory.
+#
+# Caches `vagrant ssh-config`. Pass `--refresh` to
+# reload the cache.
+BASE_BOX_DIR='/vagrant'
+
+args=("$@")
+exec_dir=$(PWD)
+vagrant_dir=$(PWD)
+
+find_vagrant_dir()
+{
+  if [[ -d .vagrant ]]; then
+    vagrant_dir=$(PWD)
+
+    return
+  fi
+
+  if [[ "${PWD}" == "/" ]]; then
+    echo "Vagrant directory not found; exiting."
+
+    exit 1
+  fi
+
+  cd ..
+
+  find_vagrant_dir
+}
+
+find_ssh_config()
+{
+  if [ "${args[0]}" = "--refresh" ]; then
+    # remove --refresh from args
+    args=("${args[@]:1}")
+
+    echo "Refreshing ssh_config."
+
+    generate_ssh_config
+  fi
+
+  if ! [ -f .vagrant/ssh_config ]; then
+    echo "Vagrant ssh config not found; generating."
+
+    generate_ssh_config
+  fi
+}
+
+generate_ssh_config()
+{
+  vagrant ssh-config > .vagrant/ssh_config
+}
+
+# Directory to switch to inside the box.
+box_dir()
+{
+  echo "${BASE_BOX_DIR}${exec_dir#${vagrant_dir}}"
+}
+
+ssh_connect()
+{
+  ssh -F .vagrant/ssh_config -q -t default "cd $(box_dir); $(ssh_command)"
+}
+
+ssh_command()
+{
+  if [ "${args}" = "" ]; then
+    echo "\$SHELL"
+  else
+    echo "${args[@]}"
+  fi
+}
+
+main()
+{
+  find_vagrant_dir
+  find_ssh_config
+
+  ssh_connect
+}
+
+main
