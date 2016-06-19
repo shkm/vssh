@@ -5,6 +5,7 @@
 #
 # Caches `vagrant ssh-config`. Pass `--refresh` to
 # reload the cache.
+VERSION=1.1
 BASE_BOX_DIR='/vagrant'
 
 args=("$@")
@@ -75,6 +76,11 @@ ssh_command()
 
 main()
 {
+  if [ "${args}" = "--version" ]; then
+    echo "vssh ${VERSION}"
+    exit 0
+  fi
+
   find_vagrant_dir
   find_ssh_config
 
