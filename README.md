@@ -4,9 +4,14 @@ A small wrapper around `vagrant ssh` which considerably improves speed, CDs into
 
 ## Install
 
-Simply copy or symlink `vssh` to a place in your path.
+### Homebrew
 
-TODO: Homebrew
+```
+brew install shkm/shkm/vssh
+```
+
+### Simple
+Copy or symlink `vssh` to a place in your path.
 
 ## Refreshing the cache
 
