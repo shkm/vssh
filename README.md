@@ -52,6 +52,10 @@ Linux
 Debonair:app (master) $
 ```
 
+
+## Limitations
+We expect that the root of your app is shared as `/vagrant`. In reality this isn't always the case, so we should parse Vagrantfile or something.
+
 ## Inspiration
 - Too much waiting
 - A repo with projects as submodules
