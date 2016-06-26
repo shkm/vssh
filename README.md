@@ -7,10 +7,10 @@ A small wrapper around `vagrant ssh` which considerably improves speed, CDs into
 ### Homebrew
 
 ```
-brew install shkm/shkm/vssh
+brew install shkm/brew/vssh
 ```
 
-### Simple
+### Generic
 Copy or symlink `vssh` to a place in your path.
 
 ## Refreshing the cache
