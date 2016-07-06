@@ -37,7 +37,7 @@ vagrant ssh  2.18s user 0.43s system
 
 ### The right directory
 
-Normally, `vagrant ssh` will drop you in `/`. With `vssh`, you'll go directly to the equivalent current directory of the host, under /vagrant. So run `vssh` from `some/directory` and you'll be dropped into `/vagrant/some/directory`.
+Normally, `vagrant ssh` will drop you in `/`. With `vssh`, you'll go directly to the equivalent current directory of the host, under `/vagrant``. So run `vssh` from `some/directory` and you'll be dropped into `/vagrant/some/directory`.
 
 
 ### Arbitrary commands
@@ -52,9 +52,9 @@ Linux
 Debonair:app (master) $
 ```
 
-
-## Limitations
-We expect that the root of your app is shared as `/vagrant`. In reality this isn't always the case, so we should parse Vagrantfile or something.
+## TODO
+- Setting the parent directory (instead of hard-coding `/vagrant``) on a per-box basis `.vssh`?
+- Aliases, a little like git aliases. Set up aliases to be sent to the box when passed into `vssh`. Prefixing with a `\` skips the alias, as in bash/zsh.
 
 ## Inspiration
 - Too much waiting
