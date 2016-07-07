@@ -70,7 +70,7 @@ ssh_command()
   if [ "${args}" = "" ]; then
     echo "\$SHELL -l"
   else
-    echo "${args[@]}"
+    echo "\$SHELL -l -c \"${args[@]}\""
   fi
 }
 
