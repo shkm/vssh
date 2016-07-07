@@ -68,7 +68,7 @@ ssh_connect()
 ssh_command()
 {
   if [ "${args}" = "" ]; then
-    echo "\$SHELL"
+    echo "\$SHELL -l"
   else
     echo "${args[@]}"
   fi
