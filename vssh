@@ -5,7 +5,7 @@
 #
 # Caches `vagrant ssh-config`. Pass `--refresh` to
 # reload the cache.
-VERSION=1.1
+VERSION=1.4
 BASE_BOX_DIR='/vagrant'
 
 args=("$@")
