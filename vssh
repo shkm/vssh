@@ -1,26 +1,78 @@
 #!/bin/sh
 #
 # Quickly ssh into a vagrant box, or run a command
-# over SSH. CDs into the current directory.
+# over SSH. CDs into the current directory relative
+# to `root` as specified in the config.
 #
-# Caches `vagrant ssh-config`. Pass `--refresh` to
-# reload the cache.
-VERSION=1.4
-BASE_BOX_DIR='/vagrant'
+# Caches `vagrant ssh-config` to achieve the speed.
+#
+# Generic commands (accessible anywhere):
+# --version    displays the version of vssh
+# --help       displays help
+#
+# Commands (accessible under a vagrant dir)
+# --config     generate a new vssh config
+# --refresh    refresh ssh config from vagrant
+VERSION=2.0
+DEFAULT_ROOT='/vagrant'
 
 args=("$@")
 exec_dir=$(PWD)
 vagrant_dir=$(PWD)
 
+main()
+{
+  parse_generic_commands
+
+  find_vagrant_dir
+  parse_commands
+
+  find_vssh_config
+  find_ssh_config
+
+  ssh_connect
+}
+
+parse_generic_commands()
+{
+  if [ "${args[0]}" = "--version" ]; then
+    echo "$(version)"
+
+    exit 0
+  fi
+
+  if [ "${args[0]}" = "--help" ]; then
+    echo "$(help)"
+
+    exit 0
+  fi
+}
+
+version()
+{
+  echo "vssh ${VERSION}"
+}
+
+help()
+{
+  echo "$(version)\n\
+        \nUsage: vssh [options] [command]\
+        \n  --version\tPrint the vssh version\
+        \n  --help\tDisplay this message\
+        \n  --config\tInteractively generate a new vssh config\
+        \n  --refresh\tRefresh ssh config cache from Vagrant"
+}
+
+
 find_vagrant_dir()
 {
-  if [[ -d .vagrant ]]; then
+  if [ -d .vagrant ]; then
     vagrant_dir=$(PWD)
 
     return
   fi
 
-  if [[ "${PWD}" == "/" ]]; then
+  if [ "${PWD}" == "/" ]; then
     echo "Vagrant directory not found; exiting."
 
     exit 1
@@ -31,19 +83,62 @@ find_vagrant_dir()
   find_vagrant_dir
 }
 
-find_ssh_config()
+find_vssh_config()
 {
+  if ! [ -f "$(vssh_config_path)" ]; then
+    read -sp "vssh config not found. Create it now?" -n 1
+    echo "\n"
+
+    if [[ "${REPLY}" == "y" || "${REPLY}" == "" ]]; then
+      generate_vssh_config
+    else
+      echo "We need a vssh config to continue."
+      echo "Please create one at $(vssh_config_path) or choose to generate next time."
+
+      exit 0
+    fi
+  fi
+
+  parse_vssh_config
+}
+
+vssh_config_path()
+{
+    echo "${PWD}/.vagrant/vssh.cfg"
+}
+
+generate_vssh_config()
+{
+  read -p "root [${DEFAULT_ROOT}]: " root
+
+  if [ "${root}" == "" ]; then root="${DEFAULT_ROOT}"; fi
+
+  echo "root=\"${root}\"" > "$(vssh_config_path)"
+
+  echo ""
+}
+
+parse_vssh_config()
+{
+  source "$(vssh_config_path)"
+}
+
+parse_commands()
+{
+  if [ "${args[0]}" = "--config" ]; then
+    # remove --config from args
+    args=("${args[@]:1}")
+
+    echo "Generating new vssh config."
+
+    generate_vssh_config
+  fi
+
   if [ "${args[0]}" = "--refresh" ]; then
     # remove --refresh from args
     args=("${args[@]:1}")
 
-    echo "Refreshing ssh_config."
-
-    generate_ssh_config
-  fi
-
-  if ! [ -f .vagrant/ssh_config ]; then
-    echo "Vagrant ssh config not found; generating."
+    echo "Refreshing vagrant ssh config."
 
     generate_ssh_config
   fi
@@ -54,16 +149,26 @@ generate_ssh_config()
   vagrant ssh-config > .vagrant/ssh_config
 }
 
-# Directory to switch to inside the box.
-box_dir()
+find_ssh_config()
 {
-  echo "${BASE_BOX_DIR}${exec_dir#${vagrant_dir}}"
+  if ! [ -f .vagrant/ssh_config ]; then
+    echo "Vagrant ssh config not found; generating."
+
+    generate_ssh_config
+  fi
 }
 
 ssh_connect()
 {
   ssh -F .vagrant/ssh_config -q -t default "cd $(box_dir); $(ssh_command)"
 }
+
+# Directory to switch to inside the box.
+box_dir()
+{
+    echo "${root}${exec_dir#${vagrant_dir}}"
+}
+
 
 ssh_command()
 {
@@ -72,19 +177,6 @@ ssh_command()
   else
     echo "\$SHELL -l -c \"${args[@]}\""
   fi
-}
-
-main()
-{
-  if [ "${args}" = "--version" ]; then
-    echo "vssh ${VERSION}"
-    exit 0
-  fi
-
-  find_vagrant_dir
-  find_ssh_config
-
-  ssh_connect
 }
 
 main

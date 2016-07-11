@@ -1,6 +1,6 @@
 # vssh
 
-A small wrapper around `vagrant ssh` which considerably improves speed, CDs into the current directory, and allows running arbitrary commands inside the box.
+A faster, funkier alternative to `vagrant ssh`.
 
 ## Install
 
@@ -13,17 +13,12 @@ brew install shkm/brew/vssh
 ### Generic
 Copy or symlink `vssh` to a place in your path.
 
-## Refreshing the cache
-
-Since we cache `vagrant ssh-config`, it'll need to be updated whenever the config changes. Simply pass `--refresh` as the first argument to `vssh` and away you go.
 
 ## Features
 
 ### Fast
 
-Instead of going through `vagrant ssh` and waiting for ruby to start up every time, we cache `vagrant ssh-config` and use ssh directly.
-
-How much faster is it?
+`vagrant ssh` is slow. `vssh` is fast.
 
 On my 2014 Macbook Air:
 
@@ -35,26 +30,53 @@ $ time vagrant ssh
 vagrant ssh  2.18s user 0.43s system
 ```
 
-### The right directory
+### Contextual
 
-Normally, `vagrant ssh` will drop you in `/`. With `vssh`, you'll go directly to the equivalent current directory of the host, under `/vagrant``. So run `vssh` from `some/directory` and you'll be dropped into `/vagrant/some/directory`.
+`vssh` figures out which directory it should be in after SSHing into the box.
 
-
-### Arbitrary commands
-
-Simply pass extra arguments to `vssh` to have them executed on the box, without dropping you into an interactive shell.
+Easiest way to describe this is with an example. Assuming vagrant user is `vagrant` and your project's route is synced to `/vagrant`:
 
 ```
-Debonair:app (master) $ uname
+$ pwd
+my_vagrant_project/foo/bar
+
+$ vagrant ssh
+$ pwd
+/home/vagrant
+
+$ vssh
+$ pwd
+/vagrant/foo/bar
+```
+
+### Convenient
+
+Oh, yeah, you can just throw a command at `vssh` and it'll execute inside the box without leaving you there. This uses a login shell and same directory rules as plain old `vssh`.
+
+```
+$ uname
 Darwin
-Debonair:app (master) $ vssh uname
+
+$ vssh uname
 Linux
-Debonair:app (master) $
 ```
 
-## TODO
-- Setting the parent directory (instead of hard-coding `/vagrant``) on a per-box basis `.vssh`?
-- Aliases, a little like git aliases. Set up aliases to be sent to the box when passed into `vssh`. Prefixing with a `\` skips the alias, as in bash/zsh.
+## Details
+
+Either run `vssh` or `vssh some_command` to ssh into the box or run a command inside it, respectively. `vssh --help` is always available.
+
+vssh generates two files: `.vagrant/ssh_config` and `.vagrant/vssh.cfg`.
+
+### `ssh_config`
+
+`ssh_config` is populated if not found (this actually calls vagrant, and is therefore slow). if your box's ssh config changes, you can refresh this with `vssh --refresh`.
+
+### `vssh.cfg`
+`vssh.cfg` is generated interactively if not found. Currently the only required option is the root directory you'd like to be dumped into relative to your host directory.
+
+Assuming your main synced folder (`.`) is mounted at `/vagrant`, you'd set the root directory to `/vagrant`.
+
+To re-run `vssh.cfg` generation, execute `vssh --generate`
 
 ## Inspiration
 - Too much waiting
