@@ -13,7 +13,7 @@
 # Commands (accessible under a vagrant dir)
 # --config     generate a new vssh config
 # --refresh    refresh ssh config from vagrant
-VERSION=2.0
+SCRIPT_DIR=$(dirname ${0})
 DEFAULT_ROOT='/vagrant'
 
 args=("$@")
@@ -36,7 +36,7 @@ main()
 parse_generic_commands()
 {
   if [ "${args[0]}" = "--version" ]; then
-    echo "$(version)"
+    echo $(version)
 
     exit 0
   fi
@@ -50,7 +50,7 @@ parse_generic_commands()
 
 version()
 {
-  echo "vssh ${VERSION}"
+  echo "vssh $(cat ${SCRIPT_DIR}/VERSION)"
 }
 
 help()
@@ -85,7 +85,7 @@ find_vagrant_dir()
 
 find_vssh_config()
 {
-  if ! [ -f "$(vssh_config_path)" ]; then
+  if ! [ -a "$(vssh_config_path)" ]; then
     read -sp "vssh config not found. Create it now?" -n 1
     echo "\n"
 
@@ -151,7 +151,7 @@ generate_ssh_config()
 
 find_ssh_config()
 {
-  if ! [ -f .vagrant/ssh_config ]; then
+  if ! [ -a .vagrant/ssh_config ]; then
     echo "Vagrant ssh config not found; generating."
 
     generate_ssh_config

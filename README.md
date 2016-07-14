@@ -78,6 +78,18 @@ Assuming your main synced folder (`.`) is mounted at `/vagrant`, you'd set the r
 
 To re-run `vssh.cfg` generation, execute `vssh --generate`
 
+
+## Tests
+
+Tests are written in cucumber/ruby because it's what I know what couldn't find a better alternative :-). To run them, you'll need Virtualbox, vagrant, and some reasonable ruby version.
+
+```
+bundle install
+bundle exec cucumber
+```
+
+Do note that I've decided to go with a fairly large CentOS box to test the vagrant stuff, and this will be created on your machine. I happened to already have this on my machine, but feel free to make a PR for a small box.
+
 ## Inspiration
 - Too much waiting
 - A repo with projects as submodules
