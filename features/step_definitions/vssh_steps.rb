@@ -16,8 +16,8 @@ Given /^I accept the prompt to create vssh\.cfg with a root of "(.*)"/ do |root|
   @wait.value
 end
 
-Given /^I am under the vagrant box folder$/ do
-  FileUtils.cd harness_path
+Given /^I am under the vagrant box folder(?: at "([^"]*)")?$/ do |sub_path|
+  FileUtils.cd [harness_path, sub_path].join '/'
 end
 
 Given /^the box is running$/ do
