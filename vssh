@@ -13,7 +13,7 @@
 # Commands (accessible under a vagrant dir)
 # --config     generate a new vssh config
 # --refresh    refresh ssh config from vagrant
-SCRIPT_DIR=$(dirname ${0})
+VERSION="2.2.1"
 DEFAULT_ROOT='/vagrant'
 
 args=("$@")
@@ -36,7 +36,7 @@ main()
 parse_generic_commands()
 {
   if [ "${args[0]}" = "--version" ]; then
-    echo $(version)
+    echo ${VERSION}
 
     exit 0
   fi
@@ -48,14 +48,9 @@ parse_generic_commands()
   fi
 }
 
-version()
-{
-  echo "vssh $(cat ${SCRIPT_DIR}/VERSION)"
-}
-
 help()
 {
-  echo "$(version)\n\
+  echo "${VERSION}\n\
         \nUsage: vssh [options] [command]\
         \n  --version\tPrint the vssh version\
         \n  --help\tDisplay this message\
