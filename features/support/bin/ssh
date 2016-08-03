@@ -1,4 +1,0 @@
-#!/bin/sh
-# ssh stub to echo args passed into ssh
-
-echo "ssh args: $@"

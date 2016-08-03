@@ -61,6 +61,29 @@ $ vssh uname
 Linux
 ```
 
+
+## Alias
+You might find the following (zsh) function useful in combination with vssh.
+
+- `v` and `v ssh`  will SSH into the machine with vssh
+- `v <command>` will run the command inside the machine with vssh
+- `v <vagrant command>` will run the command against vagrant (e.g. `v up` or `v status`).
+
+```
+v() {
+  vagrant_commands=(box connect destroy global-status halt help init login
+                    package plugin port powershell provision push rdp reload
+                    resumescp share snapshot ssh-config status suspend up
+                    version rsync-auto fsnotify)
+  if [[ -z "${*}" || "${@}" == "ssh" ]]; then
+    vssh
+  elif [[ "${vagrant_commands[(r)$1]}" == "$1" ]]; then
+    vagrant $*
+  else
+    vssh "${@}"
+  fi
+  }
+```
 ## Details
 
 Either run `vssh` or `vssh some_command` to ssh into the box or run a command inside it, respectively. `vssh --help` is always available.
@@ -78,17 +101,6 @@ Assuming your main synced folder (`.`) is mounted at `/vagrant`, you'd set the r
 
 To re-run `vssh.cfg` generation, execute `vssh --generate`
 
-
-## Tests
-
-Tests are written in cucumber/ruby because it's what I know what couldn't find a better alternative :-). To run them, you'll need Virtualbox, vagrant, and some reasonable ruby version.
-
-```
-bundle install
-bundle exec cucumber
-```
-
-Do note that I've decided to go with a fairly large CentOS box to test the vagrant stuff, and this will be created on your machine. I happened to already have this on my machine, but feel free to make a PR for a small box.
 
 ## Inspiration
 - Too much waiting
