@@ -13,7 +13,7 @@
 # Commands (accessible under a vagrant dir)
 # --config     generate a new vssh config
 # --refresh    refresh ssh config from vagrant
-VERSION="2.1.1"
+VERSION="2.1.2"
 DEFAULT_ROOT='/vagrant'
 
 args=("$@")
