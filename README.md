@@ -63,12 +63,13 @@ Linux
 
 
 ## Alias
-You might find the following (zsh) function useful in combination with vssh.
+You might find the following functions useful in combination with vssh.
 
 - `v` and `v ssh`  will SSH into the machine with vssh
 - `v <command>` will run the command inside the machine with vssh
 - `v <vagrant command>` will run the command against vagrant (e.g. `v up` or `v status`).
 
+### zsh
 ```
 v() {
   vagrant_commands=(box connect destroy global-status halt help init login
@@ -84,6 +85,20 @@ v() {
   fi
   }
 ```
+
+### fish
+```fish
+function v -d "Vagrant/vssh"
+  set -l commands box connect destroy global-status halt help init login package plugin port powershell provision push rdp reload resumescp share snapshot ssh-config status suspend up version rsync-auto fsnotify
+
+  if contains -- $argv[1] $commands
+    vagrant $argv
+  else
+    vssh $argv
+  end
+end
+```
+
 ## Details
 
 Either run `vssh` or `vssh some_command` to ssh into the box or run a command inside it, respectively. `vssh --help` is always available.
