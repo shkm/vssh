@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # Quickly ssh into a vagrant box, or run a command
 # over SSH. CDs into the current directory relative
@@ -13,12 +13,12 @@
 # Commands (accessible under a vagrant dir)
 # --config     generate a new vssh config
 # --refresh    refresh ssh config from vagrant
-VERSION="2.1.1"
+VERSION="2.1.3"
 DEFAULT_ROOT='/vagrant'
 
-args=("$@")
-exec_dir=$(PWD)
-vagrant_dir=$(PWD)
+args="${@}"
+exec_dir="${PWD}"
+vagrant_dir="${PWD}"
 
 main()
 {
@@ -62,7 +62,7 @@ help()
 find_vagrant_dir()
 {
   if [ -d .vagrant ]; then
-    vagrant_dir=$(PWD)
+    vagrant_dir=${PWD}
 
     return
   fi
