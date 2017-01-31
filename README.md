@@ -62,42 +62,18 @@ Linux
 ```
 
 
-## Alias
-You might find the following functions useful in combination with vssh.
+## Shell
+You might find the following shell functions useful in combination with vssh.
 
 - `v` and `v ssh`  will SSH into the machine with vssh
 - `v <command>` will run the command inside the machine with vssh
 - `v <vagrant command>` will run the command against vagrant (e.g. `v up` or `v status`).
 
 ### zsh
-```
-v() {
-  vagrant_commands=(box connect destroy global-status halt help init login
-                    package plugin port powershell provision push rdp reload
-                    resumescp share snapshot ssh-config status suspend up
-                    version rsync-auto fsnotify)
-  if [[ -z "${*}" || "${@}" == "ssh" ]]; then
-    vssh
-  elif [[ "${vagrant_commands[(r)$1]}" == "$1" ]]; then
-    vagrant $*
-  else
-    vssh "${@}"
-  fi
-  }
-```
+Grab the function [here](https://github.com/shkm/vssh/blob/master/functions/v.zsh).
 
 ### fish
-```fish
-function v -d "Vagrant/vssh"
-  set -l commands box connect destroy global-status halt help init login package plugin port powershell provision push rdp reload resumescp share snapshot ssh-config status suspend up version rsync-auto fsnotify
-
-  if contains -- $argv[1] $commands
-    vagrant $argv
-  else
-    vssh $argv
-  end
-end
-```
+Grab the function [here](https://github.com/shkm/vssh/blob/master/functions/v.fish). Better yet, install with [fisherman](https://github.com/fisherman/fisherman): `fisher install shkm/vssh`.
 
 ## Details
 
