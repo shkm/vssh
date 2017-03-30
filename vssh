@@ -22,6 +22,7 @@ vagrant_dir="${PWD}"
 
 main()
 {
+  load_user_config
   parse_generic_commands
 
   find_vagrant_dir
@@ -78,9 +79,26 @@ find_vagrant_dir()
   find_vagrant_dir
 }
 
+load_user_config()
+{
+  ! [ -z "$(user_config_path)" ] && source "$(user_config_path)"
+}
+
+# If XDG_CONFIG is set, config path will use it and store vssh.cfg.
+# Otherwise, fall back to ~/.vssh
+user_config_path()
+{
+  if ! [ -z "${XDG_CONFIG}" ] && [ -e "${XDG_CONFIG}/vssh/vssh.cfg" ]; then
+    echo "${XDG_CONFIG}/vssh/vssh.cfg"
+  else
+    [ -e "${HOME}/.vssh" ] && echo "${HOME}/.vssh"
+  fi
+}
+
+
 find_vssh_config()
 {
-  if ! [ -a "$(vssh_config_path)" ]; then
+  if ! [ -e "$(vssh_config_path)" ]; then
     read -sp "vssh config not found. Create it now?" -n 1
     echo "\n"
 
@@ -99,7 +117,7 @@ find_vssh_config()
 
 vssh_config_path()
 {
-    echo "${PWD}/.vagrant/vssh.cfg"
+  echo "${PWD}/.vagrant/vssh.cfg"
 }
 
 generate_vssh_config()
@@ -146,7 +164,7 @@ generate_ssh_config()
 
 find_ssh_config()
 {
-  if ! [ -a .vagrant/ssh_config ]; then
+  if ! [ -e .vagrant/ssh_config ]; then
     echo "Vagrant ssh config not found; generating."
 
     generate_ssh_config
