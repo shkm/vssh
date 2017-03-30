@@ -15,6 +15,7 @@
 # --refresh    refresh ssh config from vagrant
 VERSION="2.1.5"
 DEFAULT_ROOT='/vagrant'
+SSH_FAILED_STATUS=255
 
 args="${@}"
 exec_dir="${PWD}"
@@ -175,6 +176,30 @@ ssh_connect()
 {
     ssh -F .vagrant/ssh_config -t default "cd $(box_dir); $(ssh_command)"\
         3>&1 1>&2 2>&3 3>&-
+
+    if [ $? -eq ${SSH_FAILED_STATUS} ]; then
+      if [ "$1" = "exit_on_fail" ]; then
+        echo "SSH failed."
+
+        exit ${SSH_FAILED_STATUS}
+      else
+        ssh_failed
+      fi
+    fi
+}
+
+ssh_failed()
+{
+  if [ "${on_fail}" = "refresh" ]; then
+    echo "SSH failed. Refreshing config and trying again."
+
+    generate_ssh_config
+    ssh_connect "exit_on_fail"
+  else
+    echo "SSH failed."
+
+    exit ${SSH_FAILED_STATUS}
+  fi
 }
 
 # Directory to switch to inside the box.
