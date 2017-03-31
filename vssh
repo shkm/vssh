@@ -13,7 +13,7 @@
 # Commands (accessible under a vagrant dir)
 # --config     generate a new vssh config
 # --refresh    refresh ssh config from vagrant
-VERSION="2.1.5"
+VERSION="3.0.0"
 DEFAULT_ROOT='/vagrant'
 SSH_FAILED_STATUS=255
 
