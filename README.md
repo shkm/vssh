@@ -4,6 +4,11 @@ A faster, funkier alternative to `vagrant ssh`.
 
 ## Install
 
+### [Dobbin](https://github.com/shkm/dobbin)
+```
+dobbin add https://github.com/shkm/vssh vssh
+```
+
 ### Homebrew
 
 ```
